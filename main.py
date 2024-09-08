@@ -5,7 +5,7 @@ import numpy as np
 image = cv2.imread('datasets\TACO\data\\batch_2\\000024.JPG')
 
 # Resize the image while maintaining aspect ratio
-max_dimension = 800  # Set a maximum size for the largest dimension
+max_dimension = 720  # Set a maximum size for the largest dimension
 height, width = image.shape[:2]
 
 # Calculate scaling factor
@@ -25,19 +25,16 @@ upper_color = np.array([50, 255, 255])
 mask = cv2.inRange(hsv, lower_color, upper_color)
 
 # Apply Gaussian Blur to the mask
-blurred_mask = cv2.GaussianBlur(mask, (5, 5), 0)
+blurred_mask = cv2.GaussianBlur(resized_image, (7, 7), 0)
 
-# Use adaptive thresholding
-thresholded = cv2.adaptiveThreshold(blurred_mask, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                    cv2.THRESH_BINARY, 11, 2)
+edges = cv2.Canny(blurred_mask, 50, 150)
 
-# Apply morphological operations
+# Apply morphological operations to clean up the edges
 kernel = np.ones((3, 3), np.uint8)
-opening = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, kernel, iterations=2)  # Remove small noise
-closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)    # Close gaps
+edges_cleaned = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel, iterations=2)  # Close gaps in edges
 
 # Find contours
-contours, _ = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+contours, _ = cv2.findContours(edges_cleaned, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 # Draw bounding boxes around filtered contours
 for contour in contours:
@@ -51,6 +48,6 @@ for contour in contours:
             cv2.rectangle(resized_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 # Show the final image with detected litter
-cv2.imshow('Enhanced Litter Detection', blurred_mask)
+cv2.imshow('Enhanced Litter Detection', resized_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
