@@ -1,0 +1,1 @@
+Litter Detection using OpenCV Python
