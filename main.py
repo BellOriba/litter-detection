@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load the image
-image = cv2.imread('datasets\TACO\data\\batch_2\\000016.JPG')
+image = cv2.imread('datasets\TACO\data\\batch_2\\000012.JPG')
 
 # Resize the image while maintaining aspect ratio
 max_dimension = 720  # Set a maximum size for the largest dimension
@@ -19,15 +19,14 @@ resized_image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INT
 # Convert to HSV color space for color filtering
 hsv = cv2.cvtColor(resized_image, cv2.COLOR_BGR2HSV)
 
-# Define color range for filtering (example: bright colors)
-lower_color = np.array([0, 50, 50])
-upper_color = np.array([50, 255, 255])
-mask = cv2.inRange(hsv, lower_color, upper_color)
-
 # Apply Gaussian Blur to the mask
-blurred_mask = cv2.GaussianBlur(hsv, (7, 7), 0)
+blurred_hsv = cv2.GaussianBlur(hsv, (7, 7), 0)
 
-edges = cv2.Canny(blurred_mask, 50, 150)
+# Convert to grayscale before edge detection
+gray_blurred = cv2.cvtColor(blurred_hsv, cv2.COLOR_BGR2GRAY)
+
+# Apply Canny edge detection
+edges = cv2.Canny(gray_blurred, 50, 150)
 
 # Apply morphological operations to clean up the edges
 kernel = np.ones((3, 3), np.uint8)
@@ -85,20 +84,22 @@ def add_subtitle(image, text):
     cv2.putText(image, text, (text_x, text_y), font, font_scale, font_color, font_thickness, cv2.LINE_AA)
 
 # Convert single-channel images to 3-channel for display purposes
-mask_bgr = ensure_bgr(mask)
-blurred_mask_bgr = ensure_bgr(blurred_mask)
+blurred_hsv_bgr = ensure_bgr(blurred_hsv)
+gray_blurred_bgr = ensure_bgr(gray_blurred)
+edges_bgr = ensure_bgr(edges)
 edges_cleaned_bgr = ensure_bgr(edges_cleaned)
 
 # Add subtitles to each image
-add_subtitle(resized_image, 'Resized Image')
+add_subtitle(resized_image, 'Resized Image (Detection Result)')
 add_subtitle(hsv, 'HSV Image')
-add_subtitle(mask_bgr, 'Mask')
-add_subtitle(blurred_mask_bgr, 'Blurred Mask')
+add_subtitle(blurred_hsv_bgr, 'Blurred HSV')
+add_subtitle(gray_blurred_bgr, "Gray Blurred HSV")
+add_subtitle(edges_bgr, "Edges (Canny)")
 add_subtitle(edges_cleaned_bgr, 'Edges Cleaned')
 
 # Stack all images horizontally
-top_row = np.hstack((resized_image, hsv))
-bottom_row = np.hstack((mask_bgr, blurred_mask_bgr, edges_cleaned_bgr))
+top_row = np.hstack((resized_image, hsv, blurred_hsv_bgr))
+bottom_row = np.hstack((gray_blurred_bgr, edges_bgr, edges_cleaned_bgr))
 
 # Adjust the sizes to match (if necessary)
 if top_row.shape[1] != bottom_row.shape[1]:
