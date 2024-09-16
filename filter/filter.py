@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load the image
-image = cv2.imread('datasets\TACO\data\\batch_2\\000012.JPG')
+image = cv2.imread('datasets\TACO\data\\batch_1\\000005.JPG')
 
 # Resize the image while maintaining aspect ratio
 max_dimension = 720  # Set a maximum size for the largest dimension
@@ -92,7 +92,7 @@ edges_cleaned_bgr = ensure_bgr(edges_cleaned)
 # Add subtitles to each image
 add_subtitle(resized_image, 'Resized Image (Detection Result)')
 add_subtitle(hsv, 'HSV Image')
-add_subtitle(blurred_hsv_bgr, 'Blurred HSV')
+add_subtitle(blurred_hsv_bgr, 'Blurred HSV (Gaussian)')
 add_subtitle(gray_blurred_bgr, "Gray Blurred HSV")
 add_subtitle(edges_bgr, "Edges (Canny)")
 add_subtitle(edges_cleaned_bgr, 'Edges Cleaned')
@@ -117,3 +117,11 @@ cv2.imshow('All Steps Combined', combined_image)
 # Wait for key press and close all windows
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+'''
+imagens dos testes:
+datasets\TACO\data\\batch_2\\000011.JPG
+datasets\TACO\data\\batch_2\\000013.JPG
+datasets\TACO\data\\batch_2\\000014.JPG
+datasets\TACO\data\\batch_2\\000017.JPG
+'''
