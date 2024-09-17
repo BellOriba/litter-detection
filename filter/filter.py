@@ -1,12 +1,15 @@
 import cv2
 import numpy as np
+import os
 
 # Load the image
-image = cv2.imread('datasets\TACO\data\\batch_1\\000005.JPG')
+image_path = os.path.join('datasets', 'TACO', 'data', 'batch_2', '000014.JPG')
+image = cv2.imread(image_path)
 
 # Resize the image while maintaining aspect ratio
 max_dimension = 720  # Set a maximum size for the largest dimension
 height, width = image.shape[:2]
+
 
 # Calculate scaling factor
 scaling_factor = max_dimension / float(max(height, width))
