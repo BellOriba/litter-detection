@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 # Load the image
-image_path = os.path.join('datasets', 'TACO', 'data', 'batch_2', '000014.JPG')
+image_path = os.path.join('datasets', 'TACO', 'data', 'batch_2', '000012.JPG')
 image = cv2.imread(image_path)
 
 # Resize the image while maintaining aspect ratio
